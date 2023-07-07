@@ -43,7 +43,6 @@ public class EncodingDetects {
     }
 
     public static void readFile(String file, String code) {
-
         BufferedReader fr;
         try {
             String myCode = code!=null&&!"".equals(code) ? code : "UTF8";
@@ -402,7 +401,7 @@ class BytesEncodingDetect extends Encoding {
         int row, column;
         rawtextlen = rawtext.length;
         for (i = 0; i < rawtextlen; i++) {
-            if (rawtext[i] == '~') {
+            if (rawtext[i] == '~' && i < rawtextlen - 1) {
                 if (rawtext[i + 1] == '{') {
                     hzstart++;
                     i += 2;

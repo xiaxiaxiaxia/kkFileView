@@ -6,10 +6,13 @@ import cn.keking.model.ReturnResponse;
 import cn.keking.service.FilePreview;
 import cn.keking.utils.DownloadUtils;
 import cn.keking.service.FileHandlerService;
+import cn.keking.utils.KkFileUtils;
 import cn.keking.web.filter.BaseUrlFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 import static cn.keking.service.impl.OfficeFilePreviewImpl.getPreviewType;
 
@@ -37,21 +40,32 @@ public class CadFilePreviewImpl implements FilePreview {
         // 预览Type，参数传了就取参数的，没传取系统默认
         String officePreviewType = fileAttribute.getOfficePreviewType() == null ? ConfigConstants.getOfficePreviewType() : fileAttribute.getOfficePreviewType();
         String baseUrl = BaseUrlFilter.getBaseUrl();
+        boolean forceUpdatedCache=fileAttribute.forceUpdatedCache();
         String fileName = fileAttribute.getName();
-        String pdfName = fileName.substring(0, fileName.lastIndexOf(".") + 1) + "pdf";
+        String suffix = fileAttribute.getSuffix();
+        String pdfName = fileName.substring(0, fileName.lastIndexOf(".")) + suffix +"." + "pdf" ; //生成文件添加类型后缀 防止同名文件
         String outFilePath = FILE_DIR + pdfName;
         // 判断之前是否已转换过，如果转换过，直接返回，否则执行转换
-        if (!fileHandlerService.listConvertedFiles().containsKey(pdfName) || !ConfigConstants.isCacheEnabled()) {
+        if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(pdfName) || !ConfigConstants.isCacheEnabled()) {
             String filePath;
             ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, null);
             if (response.isFailure()) {
                 return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
             }
             filePath = response.getContent();
+            String imageUrls = null;
             if (StringUtils.hasText(outFilePath)) {
-                boolean convertResult = fileHandlerService.cadToPdf(filePath, outFilePath);
-                if (!convertResult) {
-                    return otherFilePreview.notSupportedFile(model, fileAttribute, "cad文件转换异常，请联系管理员");
+                try {
+                    imageUrls =  fileHandlerService.cadToPdf(filePath, outFilePath);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (imageUrls == null ) {
+                    return otherFilePreview.notSupportedFile(model, fileAttribute, "office转图片异常，请联系管理员");
+                }
+                //是否保留CAD源文件
+                if( ConfigConstants.getDeleteSourceFile()) {
+                    KkFileUtils.deleteFileByPath(filePath);
                 }
                 if (ConfigConstants.isCacheEnabled()) {
                     // 加入缓存

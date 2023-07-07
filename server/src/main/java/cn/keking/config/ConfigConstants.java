@@ -1,13 +1,13 @@
 package cn.keking.config;
 
-import org.artofsolving.jodconverter.util.ConfigUtils;
+import cn.keking.utils.ConfigUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * @author: chenjh
@@ -42,6 +42,13 @@ public class ConfigConstants {
     private static String pdfBookmarkDisable;
     private static Boolean fileUploadDisable;
     private static String tifPreviewType;
+    private static String beian;
+    private static String[] prohibit = {};
+    private static String size;
+    private static String password;
+    private static int pdf2JpgDpi;
+    private static String officeTypeWeb;
+    private static Boolean deleteSourceFile;
 
     public static final String DEFAULT_CACHE_ENABLED = "true";
     public static final String DEFAULT_TXT_TYPE = "txt,html,htm,asp,jsp,xml,json,properties,md,gitignore,log,java,py,c,cpp,sql,sh,bat,m,bas,prg,cmd";
@@ -62,6 +69,13 @@ public class ConfigConstants {
     public static final String DEFAULT_PDF_BOOKMARK_DISABLE = "true";
     public static final String DEFAULT_FILE_UPLOAD_DISABLE = "false";
     public static final String DEFAULT_TIF_PREVIEW_TYPE = "tif";
+    public static final String DEFAULT_BEIAN = "无";
+    public static final String DEFAULT_SIZE = "500MB";
+    public static final String DEFAULT_PROHIBIT = "exe,dll";
+    public static final String DEFAULT_PASSWORD = "123456";
+    public static final String DEFAULT_PDF2_JPG_DPI = "105";
+    public static final String DEFAULT_OFFICE_TYPE_WEB = "web";
+    public static final String DEFAULT_DELETE_SOURCE_FILE = "true";
 
     public static Boolean isCacheEnabled() {
         return cacheEnabled;
@@ -275,7 +289,7 @@ public class ConfigConstants {
     }
 
     @Value("${pdf.openFile.disable:true}")
-    public static void setPdfOpenFileDisable(String pdfOpenFileDisable) {
+    public void setPdfOpenFileDisable(String pdfOpenFileDisable) {
         setPdfOpenFileDisableValue(pdfOpenFileDisable);
     }
     public static void setPdfOpenFileDisableValue(String pdfOpenFileDisable) {
@@ -286,7 +300,7 @@ public class ConfigConstants {
         return pdfPrintDisable;
     }
     @Value("${pdf.print.disable:true}")
-    public  void setPdfPrintDisable(String pdfPrintDisable) {
+    public void setPdfPrintDisable(String pdfPrintDisable) {
         setPdfPrintDisableValue(pdfPrintDisable);
     }
     public static void setPdfPrintDisableValue(String pdfPrintDisable) {
@@ -332,7 +346,7 @@ public class ConfigConstants {
     }
 
     @Value("${file.upload.disable:false}")
-    public static void setFileUploadDisable(Boolean fileUploadDisable) {
+    public void setFileUploadDisable(Boolean fileUploadDisable) {
         setFileUploadDisableValue(fileUploadDisable);
     }
 
@@ -353,4 +367,86 @@ public class ConfigConstants {
     public static void setTifPreviewTypeValue(String tifPreviewType) {
         ConfigConstants.tifPreviewType = tifPreviewType;
     }
+
+    public static String getBeian() {
+        return beian;
+    }
+    @Value("${beian:default}")
+    public void setBeian(String beian) {
+        setBeianValue(beian);
+    }
+    public static void setBeianValue(String beian) {
+        ConfigConstants.beian = beian;
+    }
+    public static String[] getProhibit() {
+        return prohibit;
+    }
+    @Value("${prohibit:exe,dll}")
+    public void setProhibit(String prohibit) {
+        String[] prohibitArr = prohibit.split(",");
+        setProhibitValue(prohibitArr);
+    }
+
+    public static void setProhibitValue(String[] prohibit) {
+        ConfigConstants.prohibit = prohibit;
+    }
+    public static String maxSize() {
+        return size;
+    }
+    @Value("${spring.servlet.multipart.max-file-size:500MB}")
+    public void setSize(String size) {
+        setSizeValue(size);
+    }
+    public static void setSizeValue(String size) {
+        ConfigConstants.size = size;
+    }
+
+    public static String getPassword() {
+        return password;
+    }
+    @Value("${delete.password:123456}")
+    public void setPassword(String password) {
+        setPasswordValue(password);
+    }
+    public static void setPasswordValue(String password) {
+        ConfigConstants.password = password;
+    }
+
+
+    public static int getPdf2JpgDpi() {
+        return pdf2JpgDpi;
+    }
+    @Value("${pdf2jpg.dpi:105}")
+    public void pdf2JpgDpi(int pdf2JpgDpi) {
+        setPdf2JpgDpiValue(pdf2JpgDpi);
+    }
+    public static void setPdf2JpgDpiValue(int pdf2JpgDpi) {
+        ConfigConstants.pdf2JpgDpi = pdf2JpgDpi;
+    }
+
+    public static String getOfficeTypeWeb() {
+        return officeTypeWeb;
+    }
+    @Value("${office.type.web:web}")
+    public void setOfficeTypeWeb(String officeTypeWeb) {
+        setOfficeTypeWebValue(officeTypeWeb);
+    }
+    public static void setOfficeTypeWebValue(String officeTypeWeb) {
+        ConfigConstants.officeTypeWeb = officeTypeWeb;
+    }
+
+
+    public static Boolean getDeleteSourceFile() {
+        return deleteSourceFile;
+    }
+
+    @Value("${delete.source.file:true}")
+    public void setDeleteSourceFile(Boolean deleteSourceFile) {
+        setDeleteSourceFileValue(deleteSourceFile);
+    }
+
+    public static void setDeleteSourceFileValue(Boolean deleteSourceFile) {
+        ConfigConstants.deleteSourceFile = deleteSourceFile;
+    }
+
 }
